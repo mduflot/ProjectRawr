@@ -23,12 +23,6 @@ public:
 	UInputAction* LookInputAction;
 
 	UPROPERTY(EditAnywhere)
-	UInputAction* MoveInputAction;
-
-	UPROPERTY(EditAnywhere)
-	UInputAction* JumpInputAction;
-
-	UPROPERTY(EditAnywhere)
 	UInputAction* ShootInputAction;
 
 	UPROPERTY(EditAnywhere)
@@ -72,7 +66,6 @@ protected:
 	void EndCooldown();
 
 	void Look(const FInputActionValue& ActionValue);
-	void Move(const FInputActionValue& ActionValue);
 	void TryShoot();
 
 	UFUNCTION(Server, Unreliable)

@@ -71,7 +71,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	UEnhancedInputComponent* MyEnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	MyEnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
-	MyEnhancedInputComponent->BindAction(ShootInputAction, ETriggerEvent::Started, this, &AMyCharacter::TryShoot);
+	MyEnhancedInputComponent->BindAction(ShootInputAction, ETriggerEvent::Triggered, this, &AMyCharacter::TryShoot);
 }
 
 void AMyCharacter::PossessedBy(AController* NewController)
