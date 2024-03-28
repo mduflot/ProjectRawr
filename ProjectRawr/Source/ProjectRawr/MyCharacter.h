@@ -6,6 +6,7 @@
 #include "InputActionValue.h"
 #include "Interface_Hit.h"
 #include "Projectile.h"
+#include "shield.h"
 #include "ProjectRawrCharacter.h"
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
@@ -26,13 +27,22 @@ public:
 	UInputAction* ShootInputAction;
 
 	UPROPERTY(EditAnywhere)
+	UInputAction* ShieldInputAction;
+
+	UPROPERTY(EditAnywhere)
 	UMaterialInterface* RegularMaterial;
 
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* CooldownMaterial;
+	
+	UPROPERTY(EditAnywhere)
+	UMaterialInterface* ShieldCooldownMaterial;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectile> MyProjectileClass = AProjectile::StaticClass();
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AShield> MyShieldClass = AShield::StaticClass();
 
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* CameraBoom;
@@ -42,8 +52,10 @@ public:
 
 	float ShootVelocity = 2500.f;
 	FTimerHandle CooldownTimer;
+	FTimerHandle ShieldCooldownTimer;
 	FTimerHandle RetryTimer;
 	float CooldownDuration = 2.f;
+	float ShieldCooldownDuration = 3.f;
 
 	// Sets default values for this character's properties
 	AMyCharacter();
@@ -60,12 +72,18 @@ public:
 	void InitializeInputMapping();
 	FTransform GetShootStartTransform();
 	FVector GetShootDirection(FVector StartLocation);
-	void StartCooldown();
-	void EndCooldown();
+	void StartShootCooldown();
+	void EndShootCooldown();
+	void StartShieldCooldown();
+	void EndShieldCooldown();
 
 	void Look(const FInputActionValue& ActionValue);
 	void TryShoot();
+	void TryShield();
 
 	UFUNCTION(Server, Unreliable)
 	void Shoot_Server(FTransform StartTransform, FVector Velocity);
+
+	UFUNCTION(Server, Unreliable)
+	void Shield_Server(FTransform StartTransform, FVector Velocity);
 };

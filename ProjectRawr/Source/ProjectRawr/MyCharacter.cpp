@@ -72,6 +72,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	UEnhancedInputComponent* MyEnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	MyEnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
 	MyEnhancedInputComponent->BindAction(ShootInputAction, ETriggerEvent::Started, this, &AMyCharacter::TryShoot);
+	MyEnhancedInputComponent->BindAction(ShieldInputAction, ETriggerEvent::Started, this, &AMyCharacter::TryShield);
 }
 
 void AMyCharacter::PossessedBy(AController* NewController)
@@ -139,15 +140,26 @@ FVector AMyCharacter::GetShootDirection(FVector StartLocation)
 		return (LocalEnd - StartLocation).GetSafeNormal(0.0001f);
 }
 
-void AMyCharacter::StartCooldown()
+void AMyCharacter::StartShootCooldown()
 {
 	GetMesh()->SetMaterial(1, CooldownMaterial);
-	GetWorldTimerManager().SetTimer(CooldownTimer, this, &AMyCharacter::EndCooldown, CooldownDuration, false);
+	GetWorldTimerManager().SetTimer(CooldownTimer, this, &AMyCharacter::EndShootCooldown, CooldownDuration, false);
 }
 
-void AMyCharacter::EndCooldown()
+void AMyCharacter::EndShootCooldown()
 {
 	GetMesh()->SetMaterial(1, RegularMaterial);
+}
+
+void AMyCharacter::StartShieldCooldown()
+{
+	GetMesh()->SetMaterial(0, ShieldCooldownMaterial);
+	GetWorldTimerManager().SetTimer(ShieldCooldownTimer, this, &AMyCharacter::EndShieldCooldown, ShieldCooldownDuration, false);
+}
+
+void AMyCharacter::EndShieldCooldown()
+{
+	GetMesh()->SetMaterial(0, RegularMaterial);
 }
 
 void AMyCharacter::Look(const FInputActionValue& ActionValue)
@@ -165,15 +177,37 @@ void AMyCharacter::TryShoot()
 		FVector Velocity = GetShootDirection(StartTransform.GetLocation()) * ShootVelocity;
 		
 		Shoot_Server(StartTransform, Velocity);
-		StartCooldown();
+		StartShootCooldown();
 	}
+}
+
+void AMyCharacter::TryShield()
+{
+	if (GetWorldTimerManager().GetTimerRemaining(ShieldCooldownTimer) <= 0.f)
+	{
+		FTransform StartTransform = GetShootStartTransform();
+		FVector Velocity = GetShootDirection(StartTransform.GetLocation()) * ShootVelocity;
+
+		Shield_Server(StartTransform, Velocity);
+		StartShieldCooldown();
+	}
+}
+
+void AMyCharacter::Shield_Server_Implementation(FTransform StartTransform, FVector Velocity)
+{
+	FVector LocalSpawnLocation = StartTransform.GetLocation();
+	AShield* MyShield = Cast<AShield>(GetWorld()->SpawnActor(MyShieldClass, &LocalSpawnLocation));
+	if (MyShield != nullptr)
+		MyShield->Initialize();
+	
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "J'ai bouclier chef");
 }
 
 
 void AMyCharacter::Shoot_Server_Implementation(FTransform StartTransform, FVector Velocity)
 {
-	FVector LocalSpawnLocation = StartTransform.GetLocation();
-	AProjectile* MyProjectile = Cast<AProjectile>(GetWorld()->SpawnActor(MyProjectileClass, &LocalSpawnLocation));
-	if (MyProjectile != nullptr)
-		MyProjectile->Initialize(Velocity, this);
+		FVector LocalSpawnLocation = StartTransform.GetLocation();
+		AProjectile* MyProjectile = Cast<AProjectile>(GetWorld()->SpawnActor(MyProjectileClass, &LocalSpawnLocation));
+		if (MyProjectile != nullptr)
+			MyProjectile->Initialize(Velocity, this);
 }
