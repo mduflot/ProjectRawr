@@ -6,7 +6,7 @@
 #include "InputActionValue.h"
 #include "Interface_Hit.h"
 #include "Projectile.h"
-#include "shield.h"
+#include "Shield.h"
 #include "ProjectRawrCharacter.h"
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
