@@ -15,6 +15,9 @@
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
+	// Set Health
+	Health = 10;
+	
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -86,8 +89,14 @@ void AMyCharacter::PossessedBy(AController* NewController)
 
 void AMyCharacter::HitReaction(FVector HitDirection, APawn* HitInstigator)
 {
-	//FVector LaunchVelocity = HitDirection * 500.f + FVector(0.f, 0.f, 500.f);
-	//LaunchCharacter(LaunchVelocity, false, false);
+	Health -= 1;
+	// FVector LaunchVelocity = HitDirection * 500.f + FVector(0.f, 0.f, 500.f);
+	// LaunchCharacter(LaunchVelocity, false, false);
+}
+
+int AMyCharacter::GetHealth_Implementation()
+{
+	return Health;
 }
 
 void AMyCharacter::InitializeColor_Client_Implementation()

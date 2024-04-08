@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Interface_Hit.generated.h"
+#include "Interface_Health.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UInterface_Hit : public UInterface
+class UInterface_Health : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,11 +16,13 @@ class UInterface_Hit : public UInterface
 /**
  * 
  */
-class PROJECTRAWR_API IInterface_Hit
+class PROJECTRAWR_API IInterface_Health
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void HitReaction(FVector HitDirection, APawn* HitInstigator) = 0;
+	int Health;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
+	int GetHealth();
 };
