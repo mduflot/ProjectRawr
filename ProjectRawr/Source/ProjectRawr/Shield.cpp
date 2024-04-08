@@ -2,6 +2,7 @@
 
 
 #include "Shield.h"
+#include <Kismet/GameplayStatics.h>
 
 
 // Sets default values
@@ -13,19 +14,20 @@ AShield::AShield()
 	SetReplicates(true);
 	SetReplicateMovement(true);
 
-	ShieldMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("<ShieldMesh>"));
+	ShieldMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("<Sphere>"));
 	ShieldMesh->SetupAttachment(GetRootComponent());
 	RootComponent = ShieldMesh;
-	ShieldMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+	ShieldMesh->SetRelativeScale3D(FVector(1.5f, 4.f, 0.15f));
+	ShieldMesh->SetRelativeRotation(FRotator(90.f, 0.f, 90.f));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>ShieldMeshAsset(TEXT("StaticMesh'/Game/Geometry/Meshes/1M_Cube.1M_Cube'"));
-	ShieldMesh->SetStaticMesh(ShieldMeshAsset.Object);
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface>ShieldMaterialAsset(TEXT("Engine.Material'/Engine/MapTemplates/Materials/BasicAsset01.BasicAsset01'"));
-	ShieldMesh->SetMaterial(0, ShieldMaterialAsset.Object);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>SphereMeshAsset(TEXT("/Script/Engine.StaticMesh'/Engine/EngineMeshes/Cube.Cube'"));
+	ShieldMesh->SetStaticMesh(SphereMeshAsset.Object);
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface>SphereMaterialAsset(TEXT("/Script/Engine.Material'/Game/ProjectRawr/Materials/M_Shield.M_Shield'"));
+	ShieldMesh->SetMaterial(0, SphereMaterialAsset.Object);
 
-	ShieldMesh->SetSimulatePhysics(true);
+	ShieldMesh->SetSimulatePhysics(false);
 	ShieldMesh->SetEnableGravity(false);
-	ShieldMesh->SetNotifyRigidBodyCollision(true);
+	ShieldMesh->SetNotifyRigidBodyCollision(false);
 }
 
 void AShield::Initialize()
@@ -41,6 +43,8 @@ void AShield::AutoDestroy()
 void AShield::HitReaction(FVector HitDirection, APawn* HitInstigator)
 {
 	// Reaction to hit
+	GetWorldTimerManager().ClearTimer(AutoDestroyTimer);
+	AutoDestroy();
 }
 
 void AShield::EndPlay(const EEndPlayReason::Type EndPlayReason)

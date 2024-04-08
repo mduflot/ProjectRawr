@@ -86,8 +86,8 @@ void AMyCharacter::PossessedBy(AController* NewController)
 
 void AMyCharacter::HitReaction(FVector HitDirection, APawn* HitInstigator)
 {
-	FVector LaunchVelocity = HitDirection * 500.f + FVector(0.f, 0.f, 500.f);
-	LaunchCharacter(LaunchVelocity, false, false);
+	//FVector LaunchVelocity = HitDirection * 500.f + FVector(0.f, 0.f, 500.f);
+	//LaunchCharacter(LaunchVelocity, false, false);
 }
 
 void AMyCharacter::InitializeColor_Client_Implementation()
@@ -175,7 +175,7 @@ void AMyCharacter::TryShoot()
 	{
 		FTransform StartTransform = GetShootStartTransform();
 		FVector Velocity = GetShootDirection(StartTransform.GetLocation()) * ShootVelocity;
-		
+		StartTransform.SetLocation(StartTransform.GetLocation() + FollowCamera->GetForwardVector() * 5);
 		Shoot_Server(StartTransform, Velocity);
 		StartShootCooldown();
 	}
@@ -199,8 +199,6 @@ void AMyCharacter::Shield_Server_Implementation(FTransform StartTransform, FVect
 	AShield* MyShield = Cast<AShield>(GetWorld()->SpawnActor(MyShieldClass, &LocalSpawnLocation));
 	if (MyShield != nullptr)
 		MyShield->Initialize();
-	
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "J'ai bouclier chef");
 }
 
 

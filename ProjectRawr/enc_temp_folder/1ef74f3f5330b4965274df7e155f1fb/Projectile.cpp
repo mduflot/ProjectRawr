@@ -7,7 +7,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "MyCharacter.h"
 
 
 // Sets default values
@@ -63,11 +62,6 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		if (CastedOther)
 		{
 			CastedOther->HitReaction(ThrowVelocity.GetSafeNormal(0.0001), PawnSource);
-		}
-		AMyCharacter* CastedActor = Cast<AMyCharacter>(OtherActor);
-		if (CastedActor)
-		{
-			CastedActor->Health -= 10.f;
 		}
 		AutoDestroy();
 	}

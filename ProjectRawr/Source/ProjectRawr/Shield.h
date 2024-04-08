@@ -13,12 +13,14 @@ class PROJECTRAWR_API AShield : public AActor, public IInterface_Hit
 	GENERATED_BODY()
 
 public:
-	AShield();
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* ShieldMesh;
 
 	float LifeTime = 5.f;
 	FTimerHandle AutoDestroyTimer;
+	
+	AShield();
+	
 	void Initialize();
 	void AutoDestroy();
 	virtual void HitReaction(FVector HitDirection, APawn* HitInstigator) override;
