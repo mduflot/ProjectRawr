@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
+#include "Interface_Health.h"
 #include "Interface_Hit.h"
 #include "Projectile.h"
 #include "Shield.h"
@@ -12,7 +13,7 @@
 #include "MyCharacter.generated.h"
 
 UCLASS()
-class PROJECTRAWR_API AMyCharacter : public ACharacter, public IInterface_Hit
+class PROJECTRAWR_API AMyCharacter : public ACharacter, public IInterface_Hit, public IInterface_Health
 {
 	GENERATED_BODY()
 
@@ -65,6 +66,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void HitReaction(FVector HitDirection, APawn* HitInstigator) override;
+	virtual int GetHealth_Implementation() override;
+	
 
 	UFUNCTION(Client, Unreliable)
 	void InitializeColor_Client();
