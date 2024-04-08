@@ -10,7 +10,6 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -76,6 +75,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	MyEnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
 	MyEnhancedInputComponent->BindAction(ShootInputAction, ETriggerEvent::Started, this, &AMyCharacter::TryShoot);
 	MyEnhancedInputComponent->BindAction(ShieldInputAction, ETriggerEvent::Started, this, &AMyCharacter::TryShield);
+	MyEnhancedInputComponent->BindAction(SpawnInputAction, ETriggerEvent::Started, this, &AMyCharacter::TrySpawn);
 }
 
 void AMyCharacter::PossessedBy(AController* NewController)
@@ -87,11 +87,9 @@ void AMyCharacter::PossessedBy(AController* NewController)
 		InitializeColor_Client();
 }
 
-void AMyCharacter::HitReaction(FVector HitDirection, APawn* HitInstigator)
+void AMyCharacter::HitReaction_Implementation(FVector HitDirection, APawn* HitInstigator)
 {
 	Health -= 1;
-	// FVector LaunchVelocity = HitDirection * 500.f + FVector(0.f, 0.f, 500.f);
-	// LaunchCharacter(LaunchVelocity, false, false);
 }
 
 int AMyCharacter::GetHealth_Implementation()
@@ -152,7 +150,7 @@ FVector AMyCharacter::GetShootDirection(FVector StartLocation)
 void AMyCharacter::StartShootCooldown()
 {
 	GetMesh()->SetMaterial(1, CooldownMaterial);
-	GetWorldTimerManager().SetTimer(CooldownTimer, this, &AMyCharacter::EndShootCooldown, CooldownDuration, false);
+	GetWorldTimerManager().SetTimer(ShootCooldownTimer, this, &AMyCharacter::EndShootCooldown, ShootCooldownDuration, false);
 }
 
 void AMyCharacter::EndShootCooldown()
@@ -171,6 +169,16 @@ void AMyCharacter::EndShieldCooldown()
 	GetMesh()->SetMaterial(0, RegularMaterial);
 }
 
+void AMyCharacter::StartSpawnCooldown()
+{
+	GetWorldTimerManager().SetTimer(SpawnCooldownTimer, this, &AMyCharacter::EndSpawnCooldown, SpawnCooldownDuration, false);
+}
+
+void AMyCharacter::EndSpawnCooldown()
+{
+	
+}
+
 void AMyCharacter::Look(const FInputActionValue& ActionValue)
 {
 	const FVector2D LookValue = ActionValue.Get<FVector2D>();
@@ -180,7 +188,7 @@ void AMyCharacter::Look(const FInputActionValue& ActionValue)
 
 void AMyCharacter::TryShoot()
 {
-	if (GetWorldTimerManager().GetTimerRemaining(CooldownTimer) <= 0.f)
+	if (GetWorldTimerManager().GetTimerRemaining(ShootCooldownTimer) <= 0.f)
 	{
 		FTransform StartTransform = GetShootStartTransform();
 		FVector Velocity = GetShootDirection(StartTransform.GetLocation()) * ShootVelocity;
@@ -202,6 +210,26 @@ void AMyCharacter::TryShield()
 	}
 }
 
+void AMyCharacter::TrySpawn()
+{
+	if (GetWorldTimerManager().GetTimerRemaining(SpawnCooldownTimer) <= 0.f)
+	{
+		FTransform StartTransform = GetShootStartTransform();
+		FVector Velocity = GetShootDirection(StartTransform.GetLocation()) * ShootVelocity;
+
+		Spawn_Server(StartTransform, Velocity);
+		StartSpawnCooldown();
+	}
+}
+
+void AMyCharacter::Shoot_Server_Implementation(FTransform StartTransform, FVector Velocity)
+{
+	FVector LocalSpawnLocation = StartTransform.GetLocation();
+	AProjectile* MyProjectile = Cast<AProjectile>(GetWorld()->SpawnActor(MyProjectileClass, &LocalSpawnLocation));
+	if (MyProjectile != nullptr)
+		MyProjectile->Initialize(Velocity, this);
+}
+
 void AMyCharacter::Shield_Server_Implementation(FTransform StartTransform, FVector Velocity)
 {
 	FVector LocalSpawnLocation = StartTransform.GetLocation();
@@ -210,11 +238,8 @@ void AMyCharacter::Shield_Server_Implementation(FTransform StartTransform, FVect
 		MyShield->Initialize();
 }
 
-
-void AMyCharacter::Shoot_Server_Implementation(FTransform StartTransform, FVector Velocity)
+void AMyCharacter::Spawn_Server_Implementation(FTransform StartTransform, FVector Velocity)
 {
-		FVector LocalSpawnLocation = StartTransform.GetLocation();
-		AProjectile* MyProjectile = Cast<AProjectile>(GetWorld()->SpawnActor(MyProjectileClass, &LocalSpawnLocation));
-		if (MyProjectile != nullptr)
-			MyProjectile->Initialize(Velocity, this);
+	FVector LocalSpawnLocation = StartTransform.GetLocation();
+	APawn* MyPet = Cast<APawn>(GetWorld()->SpawnActor(MyPetClass, &LocalSpawnLocation));
 }

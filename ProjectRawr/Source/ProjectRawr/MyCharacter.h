@@ -31,6 +31,9 @@ public:
 	UInputAction* ShieldInputAction;
 
 	UPROPERTY(EditAnywhere)
+	UInputAction* SpawnInputAction;
+
+	UPROPERTY(EditAnywhere)
 	UMaterialInterface* RegularMaterial;
 
 	UPROPERTY(EditAnywhere)
@@ -46,17 +49,22 @@ public:
 	TSubclassOf<AShield> MyShieldClass = AShield::StaticClass();
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<APawn> MyPetClass = APawn::StaticClass();
+
+	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* CameraBoom;
 
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* FollowCamera;
 
 	float ShootVelocity = 2500.f;
-	FTimerHandle CooldownTimer;
+	FTimerHandle ShootCooldownTimer;
 	FTimerHandle ShieldCooldownTimer;
+	FTimerHandle SpawnCooldownTimer;
 	FTimerHandle RetryTimer;
-	float CooldownDuration = 2.f;
+	float ShootCooldownDuration = 2.f;
 	float ShieldCooldownDuration = 5.f;
+	float SpawnCooldownDuration = 10.f;
 
 	// Sets default values for this character's properties
 	AMyCharacter();
@@ -65,7 +73,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
-	virtual void HitReaction(FVector HitDirection, APawn* HitInstigator) override;
+	virtual void HitReaction_Implementation(FVector HitDirection, APawn* HitInstigator) override;
 	virtual int GetHealth_Implementation() override;
 	
 
@@ -79,14 +87,20 @@ public:
 	void EndShootCooldown();
 	void StartShieldCooldown();
 	void EndShieldCooldown();
+	void StartSpawnCooldown();
+	void EndSpawnCooldown();
 
 	void Look(const FInputActionValue& ActionValue);
 	void TryShoot();
 	void TryShield();
+	void TrySpawn();
 
 	UFUNCTION(Server, Unreliable)
 	void Shoot_Server(FTransform StartTransform, FVector Velocity);
 
 	UFUNCTION(Server, Unreliable)
 	void Shield_Server(FTransform StartTransform, FVector Velocity);
+
+	UFUNCTION(Server, Unreliable)
+	void Spawn_Server(FTransform StartTransform, FVector Velocity);
 };

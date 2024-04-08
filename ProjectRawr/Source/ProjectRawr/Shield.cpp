@@ -40,7 +40,7 @@ void AShield::AutoDestroy()
 	this->Destroy();
 }
 
-void AShield::HitReaction(FVector HitDirection, APawn* HitInstigator)
+void AShield::HitReaction_Implementation(FVector HitDirection, APawn* HitInstigator)
 {
 	// Reaction to hit
 	GetWorldTimerManager().ClearTimer(AutoDestroyTimer);
