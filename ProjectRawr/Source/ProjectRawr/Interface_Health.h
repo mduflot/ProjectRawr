@@ -7,7 +7,7 @@
 #include "Interface_Health.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, Blueprintable)
 class UInterface_Health : public UInterface
 {
 	GENERATED_BODY()

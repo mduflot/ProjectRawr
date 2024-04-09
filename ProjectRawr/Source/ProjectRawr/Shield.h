@@ -23,7 +23,7 @@ public:
 	
 	void Initialize();
 	void AutoDestroy();
-	void HitReaction_Implementation(FVector HitDirection, APawn* HitInstigator) override;
+	void HitReaction_Implementation() override;
 
 protected:
 	// Called when the game starts or when spawned

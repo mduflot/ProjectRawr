@@ -87,7 +87,7 @@ void AMyCharacter::PossessedBy(AController* NewController)
 		InitializeColor_Client();
 }
 
-void AMyCharacter::HitReaction_Implementation(FVector HitDirection, APawn* HitInstigator)
+void AMyCharacter::HitReaction_Implementation()
 {
 	Health -= 1;
 }

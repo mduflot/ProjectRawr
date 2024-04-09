@@ -73,7 +73,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
-	virtual void HitReaction_Implementation(FVector HitDirection, APawn* HitInstigator) override;
+	virtual void HitReaction_Implementation() override;
 	virtual int GetHealth_Implementation() override;
 	
 
