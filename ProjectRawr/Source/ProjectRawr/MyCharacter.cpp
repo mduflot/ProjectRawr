@@ -10,10 +10,12 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
+	bReplicates = true;
 	// Set Health
 	Health = 10;
 	
@@ -57,6 +59,13 @@ AMyCharacter::AMyCharacter()
 		CharMovComp->bUseControllerDesiredRotation = false;
 		CharMovComp->bOrientRotationToMovement = true;
 	}
+}
+
+void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(AMyCharacter, Health);
 }
 
 // Called when the game starts or when spawned
@@ -205,7 +214,7 @@ void AMyCharacter::TryShield()
 		FTransform StartTransform = GetShootStartTransform();
 		FVector Velocity = GetShootDirection(StartTransform.GetLocation()) * ShootVelocity;
 
-		Shield_Server(StartTransform, Velocity);
+		Shield_Server(StartTransform);
 		StartShieldCooldown();
 	}
 }
@@ -217,7 +226,7 @@ void AMyCharacter::TrySpawn()
 		FTransform StartTransform = GetShootStartTransform();
 		FVector Velocity = GetShootDirection(StartTransform.GetLocation()) * ShootVelocity;
 
-		Spawn_Server(StartTransform, Velocity);
+		Spawn_Server(StartTransform);
 		StartSpawnCooldown();
 	}
 }
@@ -230,7 +239,7 @@ void AMyCharacter::Shoot_Server_Implementation(FTransform StartTransform, FVecto
 		MyProjectile->Initialize(Velocity, this);
 }
 
-void AMyCharacter::Shield_Server_Implementation(FTransform StartTransform, FVector Velocity)
+void AMyCharacter::Shield_Server_Implementation(FTransform StartTransform)
 {
 	FVector LocalSpawnLocation = StartTransform.GetLocation();
 	AShield* MyShield = Cast<AShield>(GetWorld()->SpawnActor(MyShieldClass, &LocalSpawnLocation));
@@ -238,8 +247,9 @@ void AMyCharacter::Shield_Server_Implementation(FTransform StartTransform, FVect
 		MyShield->Initialize();
 }
 
-void AMyCharacter::Spawn_Server_Implementation(FTransform StartTransform, FVector Velocity)
+// Maybe it's better to spawn in blueprint to give the right location to spawn
+void AMyCharacter::Spawn_Server_Implementation(FTransform StartTransform)
 {
-	FVector LocalSpawnLocation = StartTransform.GetLocation();
-	APawn* MyPet = Cast<APawn>(GetWorld()->SpawnActor(MyPetClass, &LocalSpawnLocation));
+	// FVector LocalSpawnLocation = StartTransform.GetLocation();
+	// APawn* MyPet = Cast<APawn>(GetWorld()->SpawnActor(MyPetClass, &LocalSpawnLocation));
 }

@@ -57,6 +57,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* FollowCamera;
 
+	UPROPERTY(Replicated)
+	int Health;
 	float ShootVelocity = 2500.f;
 	FTimerHandle ShootCooldownTimer;
 	FTimerHandle ShieldCooldownTimer;
@@ -99,8 +101,8 @@ public:
 	void Shoot_Server(FTransform StartTransform, FVector Velocity);
 
 	UFUNCTION(Server, Unreliable)
-	void Shield_Server(FTransform StartTransform, FVector Velocity);
+	void Shield_Server(FTransform StartTransform);
 
 	UFUNCTION(Server, Unreliable)
-	void Spawn_Server(FTransform StartTransform, FVector Velocity);
+	void Spawn_Server(FTransform StartTransform);
 };
