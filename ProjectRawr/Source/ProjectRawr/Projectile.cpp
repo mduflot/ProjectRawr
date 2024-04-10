@@ -54,6 +54,7 @@ void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 
+
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                         FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -64,11 +65,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		{
 			CastedOther->HitReaction(ThrowVelocity.GetSafeNormal(0.0001), PawnSource);
 		}
-		AMyCharacter* CastedActor = Cast<AMyCharacter>(OtherActor);
-		if (CastedActor)
-		{
-			CastedActor->Health -= 10.f;
-		}
+
 		AutoDestroy();
 	}
 }

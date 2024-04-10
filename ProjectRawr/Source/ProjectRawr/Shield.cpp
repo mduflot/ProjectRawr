@@ -3,6 +3,7 @@
 
 #include "Shield.h"
 #include <Kismet/GameplayStatics.h>
+#include "Projectile.h"
 
 
 // Sets default values
@@ -27,11 +28,13 @@ AShield::AShield()
 
 	ShieldMesh->SetSimulatePhysics(false);
 	ShieldMesh->SetEnableGravity(false);
-	ShieldMesh->SetNotifyRigidBodyCollision(false);
+	ShieldMesh->SetNotifyRigidBodyCollision(true);
 }
 
-void AShield::Initialize()
+void AShield::Initialize(APawn* NewPawnSource)
 {
+	PawnSource = NewPawnSource;
+	
 	GetWorldTimerManager().SetTimer(AutoDestroyTimer, this, &AShield::AutoDestroy, LifeTime, false);
 }
 
@@ -43,9 +46,11 @@ void AShield::AutoDestroy()
 void AShield::HitReaction(FVector HitDirection, APawn* HitInstigator)
 {
 	// Reaction to hit
+	
 	GetWorldTimerManager().ClearTimer(AutoDestroyTimer);
 	AutoDestroy();
 }
+
 
 void AShield::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {

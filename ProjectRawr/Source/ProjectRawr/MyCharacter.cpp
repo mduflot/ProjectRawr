@@ -180,11 +180,13 @@ void AMyCharacter::Look(const FInputActionValue& ActionValue)
 
 void AMyCharacter::TryShoot()
 {
+	if (GetWorldTimerManager().GetTimerRemaining(ShieldCooldownTimer) >= 0.f) return;
+
 	if (GetWorldTimerManager().GetTimerRemaining(CooldownTimer) <= 0.f)
 	{
 		FTransform StartTransform = GetShootStartTransform();
 		FVector Velocity = GetShootDirection(StartTransform.GetLocation()) * ShootVelocity;
-		StartTransform.SetLocation(StartTransform.GetLocation() + FollowCamera->GetForwardVector() * 5);
+		StartTransform.SetLocation(StartTransform.GetLocation());
 		Shoot_Server(StartTransform, Velocity);
 		StartShootCooldown();
 	}
@@ -207,14 +209,14 @@ void AMyCharacter::Shield_Server_Implementation(FTransform StartTransform, FVect
 	FVector LocalSpawnLocation = StartTransform.GetLocation();
 	AShield* MyShield = Cast<AShield>(GetWorld()->SpawnActor(MyShieldClass, &LocalSpawnLocation));
 	if (MyShield != nullptr)
-		MyShield->Initialize();
+		MyShield->Initialize(this);
 }
 
 
 void AMyCharacter::Shoot_Server_Implementation(FTransform StartTransform, FVector Velocity)
 {
-		FVector LocalSpawnLocation = StartTransform.GetLocation();
-		AProjectile* MyProjectile = Cast<AProjectile>(GetWorld()->SpawnActor(MyProjectileClass, &LocalSpawnLocation));
-		if (MyProjectile != nullptr)
-			MyProjectile->Initialize(Velocity, this);
+	FVector LocalSpawnLocation = StartTransform.GetLocation();
+	AProjectile* MyProjectile = Cast<AProjectile>(GetWorld()->SpawnActor(MyProjectileClass, &LocalSpawnLocation));
+	if (MyProjectile != nullptr)
+		MyProjectile->Initialize(Velocity, this);
 }

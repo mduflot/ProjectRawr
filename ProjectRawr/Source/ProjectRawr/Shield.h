@@ -16,12 +16,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* ShieldMesh;
 
+	APawn* PawnSource;
 	float LifeTime = 5.f;
 	FTimerHandle AutoDestroyTimer;
 	
 	AShield();
 	
-	void Initialize();
+	void Initialize(APawn* NewPawnSource);
 	void AutoDestroy();
 	virtual void HitReaction(FVector HitDirection, APawn* HitInstigator) override;
 

@@ -15,6 +15,9 @@
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
+	// Set Health
+	Health = 10;
+	
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -86,8 +89,14 @@ void AMyCharacter::PossessedBy(AController* NewController)
 
 void AMyCharacter::HitReaction(FVector HitDirection, APawn* HitInstigator)
 {
-	FVector LaunchVelocity = HitDirection * 500.f + FVector(0.f, 0.f, 500.f);
-	LaunchCharacter(LaunchVelocity, false, false);
+	Health -= 1;
+	// FVector LaunchVelocity = HitDirection * 500.f + FVector(0.f, 0.f, 500.f);
+	// LaunchCharacter(LaunchVelocity, false, false);
+}
+
+int AMyCharacter::GetHealth_Implementation()
+{
+	return Health;
 }
 
 void AMyCharacter::InitializeColor_Client_Implementation()
@@ -174,9 +183,8 @@ void AMyCharacter::TryShoot()
 	if (GetWorldTimerManager().GetTimerRemaining(CooldownTimer) <= 0.f)
 	{
 		FTransform StartTransform = GetShootStartTransform();
-		float Dist = (StartTransform.GetLocation() - GetActorLocation()).Length();
 		FVector Velocity = GetShootDirection(StartTransform.GetLocation()) * ShootVelocity;
-		StartTransform.SetLocation(StartTransform.GetLocation() + FollowCamera->GetForwardVector() * Dist * 5);
+		StartTransform.SetLocation(StartTransform.GetLocation());
 		Shoot_Server(StartTransform, Velocity);
 		StartShootCooldown();
 	}
@@ -199,14 +207,14 @@ void AMyCharacter::Shield_Server_Implementation(FTransform StartTransform, FVect
 	FVector LocalSpawnLocation = StartTransform.GetLocation();
 	AShield* MyShield = Cast<AShield>(GetWorld()->SpawnActor(MyShieldClass, &LocalSpawnLocation));
 	if (MyShield != nullptr)
-		MyShield->Initialize();
+		MyShield->Initialize(this);
 }
 
 
 void AMyCharacter::Shoot_Server_Implementation(FTransform StartTransform, FVector Velocity)
 {
-		FVector LocalSpawnLocation = StartTransform.GetLocation();
-		AProjectile* MyProjectile = Cast<AProjectile>(GetWorld()->SpawnActor(MyProjectileClass, &LocalSpawnLocation));
-		if (MyProjectile != nullptr)
-			MyProjectile->Initialize(Velocity, this);
+	FVector LocalSpawnLocation = StartTransform.GetLocation();
+	AProjectile* MyProjectile = Cast<AProjectile>(GetWorld()->SpawnActor(MyProjectileClass, &LocalSpawnLocation));
+	if (MyProjectile != nullptr)
+		MyProjectile->Initialize(Velocity, this);
 }
