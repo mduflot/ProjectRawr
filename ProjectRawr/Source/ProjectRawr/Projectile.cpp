@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Projectile.h"
 
 #include "Interface_Hit.h"
@@ -8,7 +7,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "MyCharacter.h"
-
 
 // Sets default values
 AProjectile::AProjectile()
@@ -53,19 +51,15 @@ void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	                                         true);
 }
 
-
-
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                         FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (UKismetSystemLibrary::IsServer(GetWorld()))
 	{
-		IInterface_Hit* CastedOther = Cast<IInterface_Hit>(OtherActor);
-		if (CastedOther)
+		if (OtherActor->GetClass()->ImplementsInterface(UInterface_Hit::StaticClass()))
 		{
-			CastedOther->HitReaction(ThrowVelocity.GetSafeNormal(0.0001), PawnSource);
+			IInterface_Hit::Execute_HitReaction(OtherActor);
 		}
-
 		AutoDestroy();
 	}
 }

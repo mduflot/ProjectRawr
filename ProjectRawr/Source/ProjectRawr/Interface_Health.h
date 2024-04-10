@@ -7,7 +7,7 @@
 #include "Interface_Health.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, Blueprintable)
 class UInterface_Health : public UInterface
 {
 	GENERATED_BODY()
@@ -22,7 +22,6 @@ class PROJECTRAWR_API IInterface_Health
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	int Health;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
 	int GetHealth();
 };

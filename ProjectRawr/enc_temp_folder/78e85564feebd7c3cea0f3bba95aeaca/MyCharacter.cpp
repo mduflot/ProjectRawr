@@ -201,7 +201,7 @@ void AMyCharacter::TryShoot()
 	{
 		FTransform StartTransform = GetShootStartTransform();
 		FVector Velocity = GetShootDirection(StartTransform.GetLocation()) * ShootVelocity;
-		StartTransform.SetLocation(StartTransform.GetLocation());
+		StartTransform.SetLocation(StartTransform.GetLocation() + FollowCamera->GetForwardVector() * 5);
 		Shoot_Server(StartTransform, Velocity);
 		StartShootCooldown();
 	}
@@ -244,7 +244,7 @@ void AMyCharacter::Shield_Server_Implementation(FTransform StartTransform)
 	FVector LocalSpawnLocation = StartTransform.GetLocation();
 	AShield* MyShield = Cast<AShield>(GetWorld()->SpawnActor(MyShieldClass, &LocalSpawnLocation));
 	if (MyShield != nullptr)
-		MyShield->Initialize(this);
+		MyShield->Initialize();
 }
 
 // Maybe it's better to spawn in blueprint to give the right location to spawn

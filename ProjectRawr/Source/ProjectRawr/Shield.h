@@ -24,7 +24,7 @@ public:
 	
 	void Initialize(APawn* NewPawnSource);
 	void AutoDestroy();
-	virtual void HitReaction(FVector HitDirection, APawn* HitInstigator) override;
+	void HitReaction_Implementation() override;
 
 protected:
 	// Called when the game starts or when spawned
