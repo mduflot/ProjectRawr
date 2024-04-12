@@ -7,7 +7,7 @@
 #include "Interface_Hit.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, Blueprintable)
 class UInterface_Hit : public UInterface
 {
 	GENERATED_BODY()
@@ -22,5 +22,6 @@ class PROJECTRAWR_API IInterface_Hit
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void HitReaction(FVector HitDirection, APawn* HitInstigator) = 0;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Hit")
+	void HitReaction();
 };

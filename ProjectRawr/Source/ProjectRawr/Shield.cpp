@@ -43,7 +43,7 @@ void AShield::AutoDestroy()
 	this->Destroy();
 }
 
-void AShield::HitReaction(FVector HitDirection, APawn* HitInstigator)
+void AShield::HitReaction_Implementation()
 {
 	// Reaction to hit
 	
